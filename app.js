@@ -3,9 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
 const methodOverride = require("method-override");
 const path = require("path");
+
+// Version-safe import of connect-mongo
+const MongoStore = require("connect-mongo")(session);
 
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
@@ -19,10 +21,8 @@ const app = express();
 ========================= */
 
 const PORT = process.env.PORT || 3000;
-
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/finance-tracker";
-
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "finance-tracker-secret";
 
@@ -32,12 +32,8 @@ const SESSION_SECRET =
 
 mongoose
   .connect(MONGODB_URI)
-  .then(() => {
-    console.log("MongoDB Connected");
-  })
-  .catch((err) => {
-    console.error("MongoDB Connection Error:", err);
-  });
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.error("MongoDB Connection Error:", err));
 
 /* =========================
    Express Settings
@@ -55,14 +51,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 
-/* =========================
-   Render Proxy Fix
-========================= */
-
+// Proxy fix for Render
 app.set("trust proxy", 1);
 
 /* =========================
-   Session Configuration
+   Session Configuration (Version-Safe)
 ========================= */
 
 app.use(
@@ -72,13 +65,13 @@ app.use(
     saveUninitialized: false,
     store: new MongoStore({
       url: MONGODB_URI,
-      ttl: 14 * 24 * 60 * 60,
+      ttl: 14 * 24 * 60 * 60, // 14 days
     }),
     name: "finance-tracker-session",
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
 );
@@ -99,10 +92,8 @@ app.use((req, res, next) => {
 ========================= */
 
 app.use("/", authRoutes);
-
-app.get("/dashboard", isLoggedIn, transactionController.getDashboard);
-
 app.use("/transactions", transactionRoutes);
+app.get("/dashboard", isLoggedIn, transactionController.getDashboard);
 
 /* =========================
    Root Redirect
@@ -111,13 +102,12 @@ app.use("/transactions", transactionRoutes);
 app.get("/", (req, res) => {
   if (req.session.userId) {
     return res.redirect("/dashboard");
-  } else {
-    return res.redirect("/login");
   }
+  res.redirect("/login");
 });
 
 /* =========================
-   Health Check (for Render)
+   Health Check
 ========================= */
 
 app.get("/health", (req, res) => {

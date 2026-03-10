@@ -3,13 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo")(session);
 const methodOverride = require("method-override");
 const path = require("path");
-
-/* =========================
-   Import Routes & Middleware
-========================= */
 
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
@@ -25,8 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb://127.0.0.1:27017/finance-tracker";
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/finance-tracker";
 
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "finance-tracker-secret";
@@ -45,7 +40,7 @@ mongoose
   });
 
 /* =========================
-   View Engine
+   Express Settings
 ========================= */
 
 app.set("view engine", "ejs");
@@ -67,32 +62,19 @@ app.use(methodOverride("_method"));
 app.set("trust proxy", 1);
 
 /* =========================
-   Session Store
-========================= */
-
-const store = MongoStore.create({
-  mongoUrl: MONGODB_URI,
-  crypto: {
-    secret: SESSION_SECRET,
-  },
-  touchAfter: 24 * 3600,
-});
-
-store.on("error", (err) => {
-  console.log("SESSION STORE ERROR", err);
-});
-
-/* =========================
-   Session Config
+   Session Configuration
 ========================= */
 
 app.use(
   session({
-    store: store,
-    name: "finance-tracker-session",
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: new MongoStore({
+      url: MONGODB_URI,
+      ttl: 14 * 24 * 60 * 60,
+    }),
+    name: "finance-tracker-session",
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -135,7 +117,7 @@ app.get("/", (req, res) => {
 });
 
 /* =========================
-   Health Check (Render)
+   Health Check (for Render)
 ========================= */
 
 app.get("/health", (req, res) => {

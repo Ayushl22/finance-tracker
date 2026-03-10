@@ -1,3 +1,5 @@
+// app.js — Version-safe Finance Tracker for Render
+
 require("dotenv").config();
 
 const express = require("express");
@@ -6,9 +8,10 @@ const session = require("express-session");
 const methodOverride = require("method-override");
 const path = require("path");
 
-// Version-safe import of connect-mongo
+// Version-safe connect-mongo import (CommonJS)
 const MongoStore = require("connect-mongo")(session);
 
+// Import routes & middleware
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
 const transactionController = require("./controllers/transactionController");
@@ -19,7 +22,6 @@ const app = express();
 /* =========================
    Environment Variables
 ========================= */
-
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/finance-tracker";
@@ -29,7 +31,6 @@ const SESSION_SECRET =
 /* =========================
    MongoDB Connection
 ========================= */
-
 mongoose
   .connect(MONGODB_URI)
   .then(() => console.log("MongoDB Connected"))
@@ -38,26 +39,23 @@ mongoose
 /* =========================
    Express Settings
 ========================= */
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 /* =========================
    Middleware
 ========================= */
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 
-// Proxy fix for Render
+// Fix for proxy if deployed on Render
 app.set("trust proxy", 1);
 
 /* =========================
-   Session Configuration (Version-Safe)
+   Session Configuration (Version-safe)
 ========================= */
-
 app.use(
   session({
     secret: SESSION_SECRET,
@@ -79,7 +77,6 @@ app.use(
 /* =========================
    Global User Middleware
 ========================= */
-
 app.use((req, res, next) => {
   res.locals.user = req.session.userId
     ? { name: req.session.userName }
@@ -90,7 +87,6 @@ app.use((req, res, next) => {
 /* =========================
    Routes
 ========================= */
-
 app.use("/", authRoutes);
 app.use("/transactions", transactionRoutes);
 app.get("/dashboard", isLoggedIn, transactionController.getDashboard);
@@ -98,7 +94,6 @@ app.get("/dashboard", isLoggedIn, transactionController.getDashboard);
 /* =========================
    Root Redirect
 ========================= */
-
 app.get("/", (req, res) => {
   if (req.session.userId) {
     return res.redirect("/dashboard");
@@ -107,9 +102,8 @@ app.get("/", (req, res) => {
 });
 
 /* =========================
-   Health Check
+   Health Check (Render)
 ========================= */
-
 app.get("/health", (req, res) => {
   res.send("OK");
 });
@@ -117,7 +111,6 @@ app.get("/health", (req, res) => {
 /* =========================
    404 Handler
 ========================= */
-
 app.use((req, res) => {
   res.status(404).redirect("/");
 });
@@ -125,7 +118,6 @@ app.use((req, res) => {
 /* =========================
    Start Server
 ========================= */
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

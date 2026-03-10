@@ -1,66 +1,26 @@
-<<<<<<< HEAD
-# Personal Finance Tracker
+# Finance Tracker Web Application
 
-A full-stack web application for tracking personal income and expenses. Built with Node.js, Express.js, MongoDB, and EJS.
+A full-stack web application to track personal finances, categorize expenses, and visualize financial data.
 
-## Tech Stack
-
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB with Mongoose
-- **View Engine:** EJS
-- **Authentication:** express-session, bcryptjs
-- **Styling:** Custom CSS
-
-## Setup
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Configure environment:**
-   Copy `.env.example` to `.env` and update if needed:
-   ```
-   PORT=3000
-   MONGODB_URI=mongodb://localhost:27017/finance-tracker
-   SESSION_SECRET=your-secret-key
-   ```
-
-3. **Start MongoDB** (ensure MongoDB is running locally)
-
-4. **Run the application:**
-   ```bash
-   npm start
-   ```
-   Or: `node app.js`
-
-5. **Open:** http://localhost:3000
+## Demo
+Live Demo: [https://finance-tracker-1-hiaq.onrender.com](https://finance-tracker-1-hiaq.onrender.com)
 
 ## Features
+- User registration and login with secure authentication
+- Add, edit, and delete transactions
+- Categorize expenses (e.g., Food, Transport, Entertainment)
+- Visualize expenses with dynamic charts (Chart.js)
+- Track monthly and yearly spending trends
+- Responsive design for desktop and mobile
 
-- **Authentication:** Signup, Login, Logout with session-based auth
-- **Dashboard:** Total income, expenses, balance, and recent transactions
-- **Transactions:** Full CRUD (Create, Read, Update, Delete)
-- **Categories:** Income (Salary, Freelance, Investment, etc.) and Expense (Food, Transport, Rent, etc.)
-- **Responsive:** Clean UI that works on mobile and desktop
+## Tech Stack
+- **Frontend:** HTML, CSS, EJS
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Charts:** Chart.js
+- **Deployment:** Render
 
-## Routes
-
-| Method | Route | Description |
-|--------|-------|-------------|
-| GET | / | Redirect to dashboard or login |
-| GET | /signup | Signup form |
-| POST | /signup | Create account |
-| GET | /login | Login form |
-| POST | /login | Authenticate |
-| GET | /logout | Destroy session |
-| GET | /dashboard | Dashboard (protected) |
-| GET | /transactions | All transactions (protected) |
-| GET | /transactions/new | Add transaction form (protected) |
-| POST | /transactions | Create transaction (protected) |
-| GET | /transactions/:id/edit | Edit form (protected) |
-| PUT | /transactions/:id | Update transaction (protected) |
-| DELETE | /transactions/:id | Delete transaction (protected) |
-=======
-# finance-tracker
->>>>>>> ba8847253b0addf939145ba8425c2f2a4241c6b3
+## Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/Ayushl22/finance-tracker.git

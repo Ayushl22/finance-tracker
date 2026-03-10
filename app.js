@@ -21,8 +21,11 @@ const app = express();
    Environment Variables
 ========================= */
 const PORT = process.env.PORT || 3000;
+const LOCAL_MONGO = "mongodb://127.0.0.1:27017/finance-tracker";
+const envUri = process.env.MONGODB_URI;
+// Use local MongoDB if env URI is missing or contains placeholder (e.g. cluster0.abcde.mongodb.net)
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/finance-tracker";
+  envUri && !envUri.includes("abcde") ? envUri : LOCAL_MONGO;
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "finance-tracker-secret";
 

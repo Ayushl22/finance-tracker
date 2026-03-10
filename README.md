@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Personal Finance Tracker
 
 A full-stack web application for tracking personal income and expenses. Built with Node.js, Express.js, MongoDB, and EJS.
@@ -60,3 +61,6 @@ A full-stack web application for tracking personal income and expenses. Built wi
 | GET | /transactions/:id/edit | Edit form (protected) |
 | PUT | /transactions/:id | Update transaction (protected) |
 | DELETE | /transactions/:id | Delete transaction (protected) |
+=======
+# finance-tracker
+>>>>>>> ba8847253b0addf939145ba8425c2f2a4241c6b3

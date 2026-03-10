@@ -7,6 +7,10 @@ const MongoStore = require("connect-mongo");
 const methodOverride = require("method-override");
 const path = require("path");
 
+/* =========================
+   Import Routes & Middleware
+========================= */
+
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
 const transactionController = require("./controllers/transactionController");
@@ -19,8 +23,11 @@ const app = express();
 ========================= */
 
 const PORT = process.env.PORT || 3000;
+
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/finance-tracker";
+  process.env.MONGODB_URI ||
+  "mongodb://127.0.0.1:27017/finance-tracker";
+
 const SESSION_SECRET =
   process.env.SESSION_SECRET || "finance-tracker-secret";
 
@@ -38,7 +45,7 @@ mongoose
   });
 
 /* =========================
-   Express Settings
+   View Engine
 ========================= */
 
 app.set("view engine", "ejs");
@@ -60,7 +67,7 @@ app.use(methodOverride("_method"));
 app.set("trust proxy", 1);
 
 /* =========================
-   Session Configuration
+   Session Store
 ========================= */
 
 const store = MongoStore.create({
@@ -72,12 +79,16 @@ const store = MongoStore.create({
 });
 
 store.on("error", (err) => {
-  console.log("Session Store Error:", err);
+  console.log("SESSION STORE ERROR", err);
 });
+
+/* =========================
+   Session Config
+========================= */
 
 app.use(
   session({
-    store,
+    store: store,
     name: "finance-tracker-session",
     secret: SESSION_SECRET,
     resave: false,
@@ -118,8 +129,9 @@ app.use("/transactions", transactionRoutes);
 app.get("/", (req, res) => {
   if (req.session.userId) {
     return res.redirect("/dashboard");
+  } else {
+    return res.redirect("/login");
   }
-  res.redirect("/login");
 });
 
 /* =========================

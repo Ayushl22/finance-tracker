@@ -1,5 +1,4 @@
-// app.js — Version-safe Finance Tracker for Render
-
+// app.js — Finance Tracker (CommonJS, connect-mongo v3.x)
 require("dotenv").config();
 
 const express = require("express");
@@ -8,10 +7,9 @@ const session = require("express-session");
 const methodOverride = require("method-override");
 const path = require("path");
 
-// Version-safe connect-mongo import (CommonJS)
+// Version-safe connect-mongo import for v3
 const MongoStore = require("connect-mongo")(session);
 
-// Import routes & middleware
 const authRoutes = require("./routes/auth");
 const transactionRoutes = require("./routes/transactions");
 const transactionController = require("./controllers/transactionController");
@@ -50,11 +48,11 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
 
-// Fix for proxy if deployed on Render
+// Render proxy fix
 app.set("trust proxy", 1);
 
 /* =========================
-   Session Configuration (Version-safe)
+   Session Configuration
 ========================= */
 app.use(
   session({
@@ -95,14 +93,12 @@ app.get("/dashboard", isLoggedIn, transactionController.getDashboard);
    Root Redirect
 ========================= */
 app.get("/", (req, res) => {
-  if (req.session.userId) {
-    return res.redirect("/dashboard");
-  }
+  if (req.session.userId) return res.redirect("/dashboard");
   res.redirect("/login");
 });
 
 /* =========================
-   Health Check (Render)
+   Health Check
 ========================= */
 app.get("/health", (req, res) => {
   res.send("OK");
